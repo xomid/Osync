@@ -11,56 +11,61 @@ static constexpr clock_t DEFAULT_SYNC_INTERVAL = 1000;
 
 int main(int argc, char* argv[])
 {
-    ArgumentParser parser;
-    parser.parse(argc, argv);
+	ArgumentParser parser;
+	parser.parse(argc, argv);
 
-    // looking for simple tasks like help or version
-    if (argc == 2) {
-        if (parser.exists("-help") || parser.exists("-h")) {
-            // show the user how to use the app
-            std::cout << "sync \t[-s | -sourcedir] [-c | -clonedir] [-l | -logfile]\n\t[-help | -help] [-v | -version]" << std::endl;
-            return 0;
-        }
-        else if (parser.exists("-version") || parser.exists("-v")) {
-            // show the version and info
-            std::cout << "Osync " << get_app_version() << std::endl;
-            return 0;
-        }
-    }
+	// looking for simple tasks like help or version
+	if (argc == 2) {
+		if (parser.exists("-help") || parser.exists("-h")) {
+			// show the user how to use the app
+			std::cout << "sync \t[-s | -sourcedir] [-c | -clonedir] [-l | -logfile]\n\t[-help | -help] [-v | -version]" << std::endl;
+			return 0;
+		}
+		else if (parser.exists("-version") || parser.exists("-v")) {
+			// show the version and info
+			std::cout << "Osync " << get_app_version() << std::endl;
+			return 0;
+		}
+	}
 
-    clock_t syncInterval = DEFAULT_SYNC_INTERVAL;
-    std::string sourceDir, cloneDir, logFilePath;
+	clock_t syncInterval = DEFAULT_SYNC_INTERVAL;
+	std::string sourceDir, cloneDir, logFilePath;
 
-    if ((parser.find("-s", sourceDir) || parser.find("-sourcedir", sourceDir)) &&
-        (parser.find("-c", cloneDir) || parser.find("-clonedir", cloneDir)) &&
-        (parser.find("-l", logFilePath) || parser.find("-logfile", logFilePath)))
-    {
-        // parsing optional interval parameter
-        std::string strSyncInterval;
-        if (parser.find("-i", strSyncInterval) || parser.find("-interval", strSyncInterval)) {
-            clock_t interval = (clock_t)atoi(strSyncInterval.c_str());
-            syncInterval = std::min(MAX_SYNC_INTERVAL, std::max(1L, interval));
-        }
+	if ((parser.find("-s", sourceDir) || parser.find("-sourcedir", sourceDir)) &&
+		(parser.find("-c", cloneDir) || parser.find("-clonedir", cloneDir)) &&
+		(parser.find("-l", logFilePath) || parser.find("-logfile", logFilePath)))
+	{
+		// parsing optional interval parameter
+		std::string strSyncInterval;
+		if (parser.find("-i", strSyncInterval) || parser.find("-interval", strSyncInterval)) {
+			clock_t interval = (clock_t)atoi(strSyncInterval.c_str());
+			syncInterval = std::min(MAX_SYNC_INTERVAL, std::max(1L, interval));
+		}
 
-        bool shouldContinue = true;
-        auto lastTime = clock();
-        Log log(std::cout, logFilePath);
+		bool shouldContinue = true;
+		auto lastTime = clock();
+		Log log(std::cout, logFilePath);
 
-        Synchronizer synchronizer(log);
-        auto error = synchronizer.init(sourceDir, cloneDir, logFilePath);
+		Synchronizer synchronizer(log);
+		auto error = synchronizer.init(sourceDir, cloneDir, logFilePath);
+		
+		if (!error)
+			log << "Osync is running...\nwatching for any change(s)" << std::endl;
+		else 
+			log << "error while initializing. please check if directories are valid and try again." << std::endl;
 
-        while (!error) {
-            if (clock() - lastTime >= syncInterval) {
-                error = synchronizer.sync();
-                lastTime = clock();
-            }
-        }
+		while (!error) {
+			if (clock() - lastTime >= syncInterval) {
+				error = synchronizer.sync();
+				lastTime = clock();
+			}
+		}
 
-        synchronizer.terminate();
-        return error;
-    }
+		synchronizer.terminate();
+		return error;
+	}
 
-    // failed to receive the required options and values
-    std::cout << "not enough arguments" << std::endl;
-    return 1;
+	// failed to receive the required options and values
+	std::cout << "not enough arguments. please see -help or -h for further information." << std::endl;
+	return 1;
 }
