@@ -12,9 +12,7 @@ static constexpr clock_t DEFAULT_SYNC_INTERVAL = 1000;
 int main(int argc, char* argv[])
 {
     ArgumentParser parser;
-
     parser.parse(argc, argv);
-    parser.log_all();
 
     // looking for simple tasks like help or version
     if (argc == 2) {
