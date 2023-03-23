@@ -56,7 +56,7 @@ namespace Osync {
 
 		std::string strResult;
 
-		for (int i = 0; i < md5_digest_len; ++i) {
+		for (unsigned int i = 0; i < md5_digest_len; ++i) {
 			char buf[32];
 			sprintf_s(buf, "%02x", md5_digest[i]);
 			strResult.append(buf);
