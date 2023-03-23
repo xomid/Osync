@@ -5,6 +5,9 @@
 #include "FileUtil.h"
 #include "PathNode.h"
 
+/// <summary>
+/// The main class for one-way synchronizing two directories (src dir -> dst dir)
+/// </summary>
 class Synchronizer
 {
 public:
@@ -25,7 +28,6 @@ private:
 	bool running;
 	PathNode* snapshotNode;
 	FSPath rootSourceDir, rootCloneDir;
-	std::ofstream logFile;
 	Log& log;
 };
 

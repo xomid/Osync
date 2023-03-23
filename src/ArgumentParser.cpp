@@ -1,4 +1,5 @@
 #include "ArgumentParser.h"
+#include <iostream>
 
 void ArgumentParser::parse(int argc, char** argv) {
 	// push all of the arguments into a vector in the incoming order 
@@ -31,8 +32,6 @@ bool ArgumentParser::find(const std::string& option, std::string& value) {
 	// nothing found, return an empty string
 	return false;
 }
-
-#include <iostream>
 
 void ArgumentParser::log_all() {
 	for (auto v : arguments)
