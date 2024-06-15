@@ -5,7 +5,7 @@ if(WIN32)
 	set(CMAKE_TOOLCHAIN_FILE "C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake")
 endif()
 
-project (Osync)
+project (osync)
 
 find_package(libwebsockets CONFIG REQUIRED)
 
